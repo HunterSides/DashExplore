@@ -1,5 +1,3 @@
-
-import { Feather, Ionicons } from "@expo/vector-icons";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
@@ -7,7 +5,7 @@ import { SplashScreen, Stack, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const queryClient = new QueryClient();
@@ -61,30 +59,27 @@ const InitialLayout = () => {
 
   return (
     <Stack>
-   
+      <Stack.Screen
+        name="(modals)/search"
+        options={{ presentation: "modal", headerShown: false }}
+      />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      
-     
     </Stack>
   );
 };
 
 const RootLayoutNav = () => {
   return (
-   
-      <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <BottomSheetModalProvider>
-            <View
-              style={{ flex: 1, backgroundColor: "#0F172A", paddingTop: 50 }}
-            >
-              <StatusBar style="light" />
-              <InitialLayout />
-            </View>
-          </BottomSheetModalProvider>
-        </GestureHandlerRootView>
-      </QueryClientProvider>
-   
+    <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <View style={{ flex: 1, backgroundColor: "#0F172A", paddingTop: 50 }}>
+            <StatusBar style="light" />
+            <InitialLayout />
+          </View>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
+    </QueryClientProvider>
   );
 };
 
