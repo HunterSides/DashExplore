@@ -1,4 +1,4 @@
-import {listings} from "@/assets/data/listings";
+import {listings} from "@/assets/data/categories";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { Ionicons } from "@expo/vector-icons";
