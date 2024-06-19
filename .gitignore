@@ -26,3 +26,11 @@ expo-env.d.ts
 # Lock files
 package-lock.json/
 bun.lockb/
+.firebaserc
+firebase.json
+package-lock.json
+database.rules.json
+components/Listings-clean.tsx
+components/Listings-previous.tsx
+components/Listings-dynamic.tsx
+assets/images/Listing Activebestbuy-listing.png

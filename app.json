@@ -13,7 +13,10 @@
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "**/*",
+      "assets/images/*",
+      "assets/fonts/*",
+      "assets/icons/*"
     ],
     "ios": {
       "supportsTablet": true,
@@ -79,7 +82,6 @@
       "eas": {
         "projectId": "6198b255-5836-40f2-b541-f8d6a2ebf74c",
       }
-      
     }
   }
 }

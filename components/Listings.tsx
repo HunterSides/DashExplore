@@ -1,6 +1,6 @@
-import * as Location from 'expo-location';
-import { Link } from 'expo-router';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import * as Location from "expo-location";
+import { Link } from "expo-router";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -8,67 +8,63 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
+  View,
+} from "react-native";
+import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 
 interface Listing {
-  paymentMethod: string;
-  merchantId: string;
+  image: string;
   name: string;
-  address1: string;
-  latitude?: number;
-  longitude?: number;
-  territory?: string;
-  city?: string;
-  country: string;
-  source: string;
-  sourceId: string;
-  type: string;
-  redeemType: string;
-  medium_url: string;
-  distance?: number;
+  distance: number;
 }
 
 interface Props {
   listings: Listing[];
-  refresh: number;
-  category: string;
-  location: Location.LocationObject | undefined;
+  refresh?: number;
+  category?: string;
+  location?: Location.LocationObject;
 }
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 const Listings = memo(({ listings, refresh, category, location }: Props) => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [listingsData, setListings] = useState<Listing[]>(listings);
 
   const refreshListings = useCallback(() => {
-    // Implement the logic for refreshing the listings if necessary
-  }, []);
-
-  useEffect(() => {
-    if (refresh) {
-      refreshListings();
+    setListings([...listings]);
+    console.log("refreshingListingsCalled...");
+    console.log(`listings ${listings.length}`);
+    console.log(`refresh: ${refresh}`);
+    console.log(`category: ${category}`);
+    if (location) {
+      console.log(
+        `location: ${location.coords.latitude}, ${location.coords.longitude}`
+      );
+    } else {
+      console.log("location: undefined");
     }
-  }, [refresh, refreshListings]);
+  }, [listings, refresh, category, location]);
 
   useEffect(() => {
     setLoading(true);
+    refreshListings();
     const timeout = setTimeout(() => {
       setLoading(false);
     }, 200);
+
     return () => clearTimeout(timeout);
-  }, [category]);
+  }, [category, refreshListings]);
 
   const renderListingItem = useCallback(
     ({ item, index }: { item: Listing; index: number }) => (
-      <Link href={`/listing/${item.merchantId}`} asChild key={index}>
-       <TouchableOpacity>
+      <Link href={`/(modals)/merchant/listing/[id]`} asChild key={index}>
+        <TouchableOpacity>
           <Animated.View
             entering={FadeInRight}
             exiting={FadeOutLeft}
             style={styles.listing}>
-            <Image source={{ uri: item.medium_url }} style={styles.image} />
+            <Image source={{ uri: item.image }} style={styles.image} />
             <Text style={styles.title}>{item.name}</Text>
             <Text style={styles.details}>{item.distance}mi • 2 min</Text>
           </Animated.View>
@@ -87,53 +83,52 @@ const Listings = memo(({ listings, refresh, category, location }: Props) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollViewContainer}>
-          {listings.map((item: Listing, index: number) =>
+          {listingsData.map((item, index) =>
             renderListingItem({ item, index })
           )}
         </ScrollView>
       )}
     </View>
   );
-})
+});
 
 const styles = StyleSheet.create({
   container: {
-    width: screenWidth
+    width: screenWidth,
   },
   scrollViewContainer: {
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
   },
   listing: {
     width: 138,
     marginRight: 16,
     marginBottom: 16,
-    backgroundColor: '#0F172A',
+    backgroundColor: "#0F172A",
     borderRadius: 10,
-    overflow: 'hidden'
+    overflow: "hidden",
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 138,
-    borderRadius: 10
+    borderRadius: 10,
   },
   title: {
     fontSize: 13,
-    fontFamily: 'mon-sb',
-    color: 'white',
-    padding: 8
+    fontFamily: "mon-sb",
+    color: "white",
+    padding: 8,
   },
   details: {
     fontSize: 11,
-    fontFamily: 'mon',
-    color: 'white',
+    fontFamily: "mon",
+    color: "white",
     paddingBottom: 8,
-    paddingHorizontal: 8
+    paddingHorizontal: 8,
   },
   loading: {
-    color: 'white',
-    textAlign: 'center'
-  }
+    color: "white",
+    textAlign: "center",
+  },
 });
 
 export default Listings;
-

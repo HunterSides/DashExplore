@@ -1,4 +1,4 @@
-import { data } from "@/assets/data/categories";
+import { merchants as data } from "@/assets/data/categories";
 import { useCallback, useMemo } from "react";
 import distance from "../utils/calcDistance";
 const useDistance = (lat1: number, lon1: number) => {

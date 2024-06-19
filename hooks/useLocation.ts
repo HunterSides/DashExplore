@@ -1,7 +1,21 @@
 // useLocation.js
 import * as Location from "expo-location";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+export const localData = (data: any[]) => {
+  const { location } = useLocation();
 
+  const localListingsFromUserDynamicLocationObject = useCallback(
+    () => [...data],
+    [location]
+  );
+
+  const localItems = useMemo(() => data, []);
+
+  return {
+    localListingsFromUserDynamicLocationObject,
+    localItems,
+  };
+};
 const useLocation = () => {
   const [location, setLocation] = useState<Location.LocationObject>();
   const [errorMsg, setErrorMsg] = useState("");

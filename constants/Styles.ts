@@ -24,8 +24,9 @@ export const defaultStyles = StyleSheet.create({
   },
   btnText: {
     color: "#fff",
-    fontSize: 16,
-    fontFamily: "mon-b",
+    fontSize: 15.24,
+    letterSpacing: 1,
+    fontFamily: "mon-sb",
   },
   btnIcon: {
     position: "absolute",
@@ -40,7 +41,5 @@ export const defaultStyles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderTopColor: Colors.grey,
-    borderTopWidth: StyleSheet.hairlineWidth,
   },
 });

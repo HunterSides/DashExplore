@@ -10,7 +10,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const queryClient = new QueryClient();
 
-// Cache the Clerk JWT
 const tokenCache = {
   async getToken(key: string) {
     try {
@@ -27,12 +26,8 @@ const tokenCache = {
     }
   },
 };
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
@@ -41,8 +36,9 @@ const InitialLayout = () => {
     "mon-sb": require("../assets/fonts/Montserrat-SemiBold.ttf"),
     "mon-b": require("../assets/fonts/Montserrat-Bold.ttf"),
   });
-  const router = useRouter();
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+
+  const router = useRouter(); // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -63,6 +59,7 @@ const InitialLayout = () => {
         name="(modals)/search"
         options={{ presentation: "modal", headerShown: false }}
       />
+      <Stack.Screen name="listing/[id]" options={{ headerTitle: "" }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
