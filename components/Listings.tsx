@@ -1,6 +1,6 @@
 import * as Location from "expo-location";
 import { Link } from "expo-router";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -19,7 +19,9 @@ interface Listing {
 }
 
 interface Props {
-  listings: Listing[];
+  listings: any;
+  isLoading?: boolean;
+  error?: any;
   refresh?: number;
   category?: string;
   location?: Location.LocationObject;
@@ -27,14 +29,21 @@ interface Props {
 
 const screenWidth = Dimensions.get("window").width;
 
-const Listings = memo(({ listings, refresh, category, location }: Props) => {
-  const [loading, setLoading] = useState(false);
+const Listings = ({
+  isLoading,
+  error,
+  listings,
+  refresh,
+  category,
+  location,
+}: Props) => {
+  const [loading, setLoading] = useState(isLoading);
   const [listingsData, setListings] = useState<Listing[]>(listings);
 
   const refreshListings = useCallback(() => {
     setListings([...listings]);
     console.log("refreshingListingsCalled...");
-    console.log(`listings ${listings.length}`);
+    console.log(`listings Length${listings.length}`);
     console.log(`refresh: ${refresh}`);
     console.log(`category: ${category}`);
     if (location) {
@@ -64,7 +73,14 @@ const Listings = memo(({ listings, refresh, category, location }: Props) => {
             entering={FadeInRight}
             exiting={FadeOutLeft}
             style={styles.listing}>
-            <Image source={{ uri: item.image }} style={styles.image} />
+            <Image
+              source={{
+                uri:
+                  item.image ||
+                  "https://res.cloudinary.com/dtovvjurl/image/upload/v1718736688/bestbuy_xrggtq.png",
+              }}
+              style={styles.image}
+            />
             <Text style={styles.title}>{item.name}</Text>
             <Text style={styles.details}>{item.distance}mi • 2 min</Text>
           </Animated.View>
@@ -90,7 +106,7 @@ const Listings = memo(({ listings, refresh, category, location }: Props) => {
       )}
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   container: {

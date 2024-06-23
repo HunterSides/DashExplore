@@ -1,25 +1,29 @@
 import { CATEGORIES } from "@/assets/data/categories";
 // import listings from '@/assets/data/list.json';
-import { merchants as listings } from "@/assets/data/categories";
 import ExploreHeader from "@/components/ExploreHeader";
 import Listings from "@/components/Listings";
 import Colors from "@/constants/Colors";
+import useMerchants from "@/hooks/use-merchants";
 import useLocation from "@/hooks/useLocation";
-
 import { Stack } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const Page = () => {
-  const items = useMemo(() => listings as any, []);
+  const { merchants: items, isLoading, error } = useMerchants();
+  const { location } = useLocation();
+
+  // const items = useMemo(() => listings as any, []);
+  //const items = useMemo(() => merchants as any, []);
+  // console.log({ isLoading, error });
+  // console.log(location);
   const [category, setCategory] = useState<string>(
     CATEGORIES.PRIMARY.Restaurants
   );
-  const [refresh, setRefresh] = useState<number>(0);
+  const [refresh, setRefresh] = useState<number>(1);
   const onDataChanged = (category: string) => {
     setCategory(category);
   };
-  const { location } = useLocation();
 
   return (
     <View
@@ -50,9 +54,11 @@ const Page = () => {
             Local Favorites
           </Text>
           <Listings
+            isLoading={isLoading}
+            error={error}
             location={location}
             listings={items.slice(0, 5)}
-            refresh={refresh}
+            refresh={isLoading ? 0 : refresh}
             category={category}
           />
         </View>
