@@ -1,5 +1,4 @@
 import { CATEGORIES } from "@/assets/data/categories";
-// import listings from '@/assets/data/list.json';
 import ExploreHeader from "@/components/ExploreHeader";
 import Listings from "@/components/Listings";
 import Colors from "@/constants/Colors";
@@ -9,18 +8,14 @@ import { Stack } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
-const Page = () => {
+const ListingsPage = () => {
   const { merchants: items, isLoading, error } = useMerchants();
   const { location } = useLocation();
 
-  // const items = useMemo(() => listings as any, []);
-  //const items = useMemo(() => merchants as any, []);
-  // console.log({ isLoading, error });
-  // console.log(location);
   const [category, setCategory] = useState<string>(
     CATEGORIES.PRIMARY.Restaurants
   );
-  const [refresh, setRefresh] = useState<number>(1);
+  const [refresh] = useState<number>(1);
   const onDataChanged = (category: string) => {
     setCategory(category);
   };
@@ -101,4 +96,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ListingsPage;

@@ -22,7 +22,7 @@ interface Props {
   listings: any;
   isLoading?: boolean;
   error?: any;
-  refresh?: number;
+  refresh?: number | boolean;
   category?: string;
   location?: Location.LocationObject;
 }
@@ -42,10 +42,7 @@ const Listings = ({
 
   const refreshListings = useCallback(() => {
     setListings([...listings]);
-    console.log("refreshingListingsCalled...");
-    console.log(`listings Length${listings.length}`);
-    console.log(`refresh: ${refresh}`);
-    console.log(`category: ${category}`);
+
     if (location) {
       console.log(
         `location: ${location.coords.latitude}, ${location.coords.longitude}`
