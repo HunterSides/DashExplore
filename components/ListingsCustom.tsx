@@ -4,10 +4,11 @@ import { TopLevel } from '@/types/geo-type';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView from 'react-native-map-clustering';
 import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { useQuery } from '@tanstack/react-query';
 
 interface Props {
   listings: any;
@@ -27,11 +28,51 @@ const INITIAL_REGION = {
 const ListingsMap = memo(({ listings }: Props) => {
   const router = useRouter();
   const mapRef = useRef<any>(null);
+  const [clusters, setClusters] = useState([]);
 
   // When the component mounts, locate the user
   useEffect(() => {
     onLocateMe();
   }, []);
+
+  // Fetch clustered data whenever the region changes
+  useEffect(() => {
+    fetchClusteredData(INITIAL_REGION);
+  }, []);
+
+  const fetchClusteredData = async (region: any) => {
+    const { west, south, east, north } = getBoundingBox(region);
+    const zoom = calculateZoomLevel(region);
+
+    const { data } = await useQuery({
+      queryKey: ["listings"],
+      queryFn: async () => {
+          const response = await fetch(`http://192.168.1.249:3001/merchant?file_name=source&west=${west}&south=${south}&east=${east}&north=${north}&zoom=${zoom}`, {
+              method: 'GET',
+          });
+          return response.json();
+      }
+    });
+
+    setClusters(data);
+};
+
+  const getBoundingBox = (region: any) => {
+    const { latitude, longitude, latitudeDelta, longitudeDelta } = region;
+
+    const west = longitude - longitudeDelta / 2;
+    const south = latitude - latitudeDelta / 2;
+    const east = longitude + longitudeDelta / 2;
+    const north = latitude + latitudeDelta / 2;
+
+    return { west, south, east, north };
+  };
+
+  const calculateZoomLevel = (region: any) => {
+    const { latitudeDelta } = region;
+    const zoomLevel = Math.round(Math.log(360 / latitudeDelta) / Math.LN2);
+    return zoomLevel;
+  };
 
   // When a marker is selected, navigate to the listing page
   const onMarkerSelected = (event: any) => {
@@ -50,16 +91,18 @@ const ListingsMap = memo(({ listings }: Props) => {
     const region = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      latitudeDelta: 0.0522, // to lock the zoom level to a city level, change this value to 0.0922
-      longitudeDelta: 0.0522
+      latitudeDelta: 2, // to lock the zoom level to a city level, change this value to 0.0922
+      longitudeDelta: 2
     };
 
     mapRef.current?.animateToRegion(region);
+    fetchClusteredData(region); // Fetch clustered data for the user's location
   };
 
   const onRegionChangeComplete = (region: any) => {
-    console.log(region);
+    fetchClusteredData(region);
   };
+
   // Overwrite the renderCluster function to customize the cluster markers
   const renderCluster = (cluster: any) => {
     const { id, geometry, onPress, properties } = cluster;
@@ -108,20 +151,23 @@ const ListingsMap = memo(({ listings }: Props) => {
         clusterTextColor="#000"
         clusterFontFamily="mon-sb"
         radius={40}
-        onRegionChangeComplete={onRegionChangeComplete}
+        renderCluster={renderCluster}
         showsUserLocation={true}
-        showsCompass={true}
-        renderCluster={renderCluster}>
-        {listings.features.map((item: any) => (
+        onRegionChangeComplete={onRegionChangeComplete}>
+        {clusters.map((cluster: any, index: number) => (
           <Marker
             coordinate={{
-              latitude: item.properties.latitude,
-              longitude: item.properties.longitude
+              latitude: cluster.geometry.coordinates[1],
+              longitude: cluster.geometry.coordinates[0]
             }}
-            key={item.properties.sourceId}
-            onPress={() => onMarkerSelected(item)}>
+            key={index}
+            onPress={() => onMarkerSelected(cluster)}>
             <View style={styles.marker}>
-              <Text style={styles.markerText}> {item.properties.name}</Text>
+              <Text style={styles.markerText}>
+                {cluster.properties.cluster
+                  ? `Cluster of ${cluster.properties.point_count} points`
+                  : cluster.properties.name}
+              </Text>
             </View>
           </Marker>
         ))}

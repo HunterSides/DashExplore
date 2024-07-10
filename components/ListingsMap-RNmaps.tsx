@@ -6,9 +6,12 @@ import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import React, { memo, useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import MapView from 'react-native-map-clustering';
-import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
+import { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { UrlTile } from 'react-native-maps';
+import MapView from 'react-native-maps';
+
+//SEE: https://github.com/react-native-maps/react-native-maps/tree/master?tab=readme-ov-file#using-a-custom-tile-overlay
 interface Props {
   listings: any;
 }
@@ -50,14 +53,13 @@ const ListingsMap = memo(({ listings }: Props) => {
     const region = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      latitudeDelta: 0.0522, // to lock the zoom level to a city level, change this value to 0.0922
-      longitudeDelta: 0.0522
+      latitudeDelta: 7, // to lock the zoom level to a city level, change this value to 0.0922
+      longitudeDelta: 7
     };
 
     mapRef.current?.animateToRegion(region);
   };
-
-  const onRegionChangeComplete = (region: any) => {
+  const onRegionChange = (region: any) => {
     console.log(region);
   };
   // Overwrite the renderCluster function to customize the cluster markers
@@ -108,9 +110,6 @@ const ListingsMap = memo(({ listings }: Props) => {
         clusterTextColor="#000"
         clusterFontFamily="mon-sb"
         radius={40}
-        onRegionChangeComplete={onRegionChangeComplete}
-        showsUserLocation={true}
-        showsCompass={true}
         renderCluster={renderCluster}>
         {listings.features.map((item: any) => (
           <Marker
